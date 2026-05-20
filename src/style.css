@@ -826,3 +826,14 @@ Responsive layout
         align-items: flex-start;
     }
 }
+
+/*
+=========================
+Section Actions
+=========================
+*/
+
+.section-actions {
+    display: flex;
+    gap: 10px;
+}

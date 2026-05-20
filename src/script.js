@@ -12,19 +12,38 @@ Imports
 
 import { createNavbar } from "./components/navbar.js";
 import { createSidebar } from "./components/sidebar.js";
-import { createProjectCard } from "./components/projectCard.js";
 import { createActivityPanel } from "./components/activityPanel.js";
-import { createProjectDetail } from "./components/projectDetail.js";
+import {
+    createProjectModal,
+    createEditProjectModal,
+} from "./components/projectModal.js";
 
 import { projects as initialProjects } from "./data/projects.js";
 
-/*
-=========================
-Local Storage Setup
-=========================
-*/
+import { loadFromStorage, saveToStorage } from "./utils/storage.js";
+import {
+    getHashForPage,
+    getRouteFromHash,
+} from "./utils/router.js";
 
-const STORAGE_KEY = "gtv-dev-hub-projects";
+import {
+    appState,
+    addProject,
+    updateProject,
+    deleteProject,
+    resetProjects,
+} from "./state/appState.js";
+
+import { STORAGE_KEY, ROUTES } from "./constants/appConstants.js";
+
+import { renderProjectCards } from "./render/renderProjects.js";
+import { renderDashboard } from "./render/renderDashboard.js";
+import { renderSimplePage } from "./render/renderSimplePage.js";
+import { renderProjectDetail } from "./render/renderProjectDetail.js";
+
+import { attachSearchHandler } from "./events/searchEvents.js";
+import { attachProjectEvents } from "./events/projectEvents.js";
+import { attachNavigationEvents } from "./events/navigationEvents.js";
 
 /*
 =========================
@@ -33,18 +52,7 @@ Load Projects
 */
 
 function loadProjects() {
-    const savedProjects = localStorage.getItem(STORAGE_KEY);
-
-    if (!savedProjects) {
-        return [...initialProjects];
-    }
-
-    try {
-        return JSON.parse(savedProjects);
-    } catch (error) {
-        console.error("Failed to load saved projects:", error);
-        return [...initialProjects];
-    }
+    return loadFromStorage(STORAGE_KEY, [...initialProjects]);
 }
 
 /*
@@ -54,16 +62,8 @@ Save Projects
 */
 
 function saveProjects() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+    saveToStorage(STORAGE_KEY, appState.projects);
 }
-
-/*
-=========================
-Projects State
-=========================
-*/
-
-let projects = loadProjects();
 
 /*
 =========================
@@ -76,25 +76,11 @@ const app = document.querySelector("#app");
 
 /*
 =========================
-App State
+Initialize State
 =========================
 */
 
-let currentPage = "overview";
-
-/*
-=========================
-Route Helpers
-=========================
-*/
-
-function getHashForPage(page) {
-    if (page === "overview") {
-        return "#/overview";
-    }
-
-    return `#/${page}`;
-}
+appState.projects = loadProjects();
 
 /*
 =========================
@@ -105,8 +91,7 @@ Render Current Route
 function renderCurrentRoute() {
     const route = getRouteFromHash();
 
-    renderPage(route.page, route.projectId);
-    setActiveSidebar();
+    renderApp(route.page, route.projectId);
 }
 
 /*
@@ -114,26 +99,6 @@ function renderCurrentRoute() {
 Route Parser
 =========================
 */
-
-function getRouteFromHash() {
-    const hash = window.location.hash;
-
-    if (hash.startsWith("#/project/")) {
-        const projectId = Number(hash.replace("#/project/", ""));
-
-        return {
-            page: "project",
-            projectId: projectId,
-        };
-    }
-
-    if (hash === "#/projects") return { page: "projects" };
-    if (hash === "#/profile") return { page: "profile" };
-    if (hash === "#/stars") return { page: "stars" };
-    if (hash === "#/settings") return { page: "settings" };
-
-    return { page: "overview" };
-}
 
 function navigateToProject(projectId) {
     const newHash = `#/project/${projectId}`;
@@ -150,71 +115,32 @@ function navigateTo(page) {
     const newHash = getHashForPage(page);
 
     if (window.location.hash === newHash) {
-        renderPage(page);
-        setActiveSidebar();
+        renderApp(page);
         return;
     }
 
     window.location.hash = newHash;
 }
 
-/*
-=========================
-Render Project Cards
-=========================
-*/
+attachProjectEvents({
+    appState,
+    addProject,
+    updateProject,
+    deleteProject,
+    saveProjects,
+    navigateTo,
+    navigateToProject,
+    renderApp,
+    openProjectModal,
+    openEditProjectModal,
+    resetProjects,
+    initialProjects,
+});
 
-// Convert every project object into a project card HTML string
-function renderProjectCards(projectList) {
-    if (projectList.length === 0) {
-        return `
-            <div class="empty-state">
-                <h3>No projects found.</h3>
-                <p>Try searching for another project name, language, or keyword.</p>
-            </div>
-        `;
-    }
-    
-    return projectList.map((project) => createProjectCard(project)).join("");
-}
-
-/*
-=========================
-Render Full Page
-=========================
-*/
-
-// Put all UI parts into the app container
-function renderDashboard() {
-    app.innerHTML = `
-    ${createNavbar()}
-    
-    <main class="main-layout">
-        ${createSidebar()}
-        
-        <section class="content">
-            <div class="hero">
-                <h1>Build. Share. Grow.</h1>
-                <p>A developer hub for GTV Community projects, bots, tools, and experiments.</p>
-            </div>
-            
-            <div class="section-header">
-                <h2>Featured Projects</h2>
-                <button class="primary-btn new-project-btn">New Project</button>
-            </div>
-            
-            <div class="project-grid">
-                ${renderProjectCards(projects)}
-            </div>
-        </section>
-
-        ${createActivityPanel()}
-    </main>
-`;
-
-setActiveSidebar();
-attachSearchHandler(); // re-attach after re-render
-}
+attachNavigationEvents({
+    navigateTo,
+    renderCurrentRoute,
+});
 
 /*
 =========================
@@ -222,137 +148,9 @@ Initial Render
 =========================
 */
 
-renderCurrentRoute();
+const initialRoute = getRouteFromHash();
 
-/*
-=========================
-Search Feature
-=========================
-*/
-
-function attachSearchHandler() {
-    const searchInput = document.querySelector(".search-input");
-    const projectGrid = document.querySelector(".project-grid");
-
-    if (!searchInput || !projectGrid) return;
-
-    searchInput.addEventListener("input", function () {
-        const searchValue = searchInput.value.toLowerCase();
-
-        const filteredProjects = projects.filter((project) => {
-            return (
-                project.name.toLowerCase().includes(searchValue) ||
-                project.description.toLowerCase().includes(searchValue) ||
-                project.language.toLowerCase().includes(searchValue)
-            );
-        });
-
-        projectGrid.innerHTML = renderProjectCards(filteredProjects);
-    });
-}
-
-/*
-=========================
-Project Click Handler
-=========================
-*/
-
-document.addEventListener("click", function (e) {
-    // If user clicked delete button, do not open project detail
-    if (e.target.closest(".delete-project-btn")) return;
-    
-    const card = e.target.closest(".project-card");
-
-    if (!card) return;
-
-    const projectId = Number(card.dataset.id);
-
-    navigateToProject(projectId);
-});
-
-/*
-=========================
-Back Button Handler
-=========================
-*/
-
-document.addEventListener("click", function (e) {
-    if (e.target.classList.contains("back-btn")) {
-        navigateTo("Projects");
-    }
-});
-
-/*
-=========================
-Project Detail View
-=========================
-*/
-
-function showProjectDetail(project) {
-    const content = document.querySelector(".content");
-
-    if (!project) return;
-
-    content.innerHTML = createProjectDetail(project);
-}
-
-/*
-=========================
-Navigation Handler
-=========================
-*/
-
-document.addEventListener("click", function (e) {
-    const link = e.target.closest("[data-page]");
-
-    if (!link) return;
-
-    e.preventDefault();
-
-    navigateTo(link.dataset.page);
-    setActiveSidebar();
-});
-
-/*
-=========================
-Simple Page Renderer
-=========================
-*/
-
-function renderSimplePage(pageName) {
-    const content = document.querySelector(".content");
-
-    if (pageName === "projects") {
-        content.innerHTML = `
-            <div class="section-header">
-                <h2>All Projects</h2>
-            </div>
-            
-            <div class="project-grid">
-                ${renderProjectCards(projects)}
-            </div>
-        `;
-
-        attachSearchHandler();
-
-        return;
-    }
-
-    const pageTitles = {
-        stars: "Starred Projects",
-        settings: "Settings",
-        profile: "Profile",
-    };
-
-    const title = pageTitles[pageName] || "Page";
-
-    content.innerHTML = `
-        <div class="simple-page">
-            <h1>${title}</h1>
-            <p>This section will be developed in a later phase.</p>
-        </div>
-    `;
-}
+renderApp(initialRoute.page, initialRoute.projectId);
 
 /*
 =========================
@@ -364,25 +162,13 @@ function setActiveSidebar() {
     const links = document.querySelectorAll("[data-page]");
 
     links.forEach((link) => {
-        if (link.dataset.page === currentPage) {
+        if (link.dataset.page === appState.currentPage) {
             link.classList.add("active");
         } else {
             link.classList.remove("active");
         }
     });
 }
-
-/*
-=========================
-Open Modal
-=========================
-*/
-
-document.addEventListener("click", function (e) {
-    if (e.target.classList.contains("new-project-btn")) {
-        openProjectModal();
-    }
-});
 
 /*
 =========================
@@ -394,22 +180,7 @@ function openProjectModal() {
     const modal = document.createElement("div");
 
     modal.className = "modal-overlay";
-    
-    modal.innerHTML = `
-        <div class="modal">
-        
-            <h2>Create New Project</h2>
-            
-            <input class="project-name-input" type="text" placeholder="Project name" />
-            <textarea class="project-desc-input" placeholder="Description"></textarea>
-            
-            <div class="modal-actions">
-                <button class="primary-btn create-btn">Create</button>
-                <button class="secondary-btn close-btn">Cancel</button>
-            </div>
-            
-        </div>
-    `;
+    modal.innerHTML = createProjectModal();
 
     document.body.appendChild(modal);
 }
@@ -424,32 +195,7 @@ function openEditProjectModal(project) {
     const modal = document.createElement("div");
 
     modal.className = "modal-overlay";
-
-    modal.innerHTML = `
-        <div class="modal">
-        
-            <h2>Edit Project</h2>
-            
-            <input
-                class="edit-project-name-input"
-                type="text"
-                value="${project.name}"
-            />
-            
-            <textarea class="edit-project-desc-input">${project.description}</textarea>
-            
-            <div class="modal-actions">
-                <button class="primary-btn save-edit-btn" data-save-id="${project.id}">
-                    Save Changes
-                </button>
-                
-                <button class="secondary-btn close-btn">
-                    Cancel
-                </button>
-            </div>
-            
-        </div>
-    `;
+    modal.innerHTML = createEditProjectModal(project);
 
     document.body.appendChild(modal);
 }
@@ -468,173 +214,43 @@ document.addEventListener("click", function (e) {
 
 /*
 =========================
-Create Project
-=========================
-*/
-
-document.addEventListener("click", function (e) {
-    if (!e.target.classList.contains("create-btn")) return;
-
-    const nameInput = document.querySelector(".project-name-input");
-    const descInput = document.querySelector(".project-desc-input");
-
-    const projectName = nameInput.value.trim();
-    const projectDesc = descInput.value.trim();
-
-    if (!projectName || !projectDesc) {
-        alert("Please fill in project name and description.");
-        return;
-    }
-
-    const newProject = {
-        id: Date.now(),
-        name: projectName,
-        description: projectDesc,
-        language: "JavaScript",
-        status: "Planning",
-        visibility: "Public",
-        stars: 0,
-        forks: 0,
-        updatedAt: "Updated just now",
-    };
-
-    projects.unshift(newProject);
-    saveProjects();
-
-    document.querySelector(".modal-overlay")?.remove();
-
-    navigateTo("projects");
-});
-
-/*
-=========================
 Main Router
 =========================
 */
 
 function renderPage(page, projectId = null) {
-    currentPage = page === "project" ? "projects" : page;
+    appState.currentPage = page === ROUTES.PROJECT ? ROUTES.PROJECTS : page;
 
-    if (page === "overview") {
-        renderDashboard();
+    if (page === ROUTES.OVERVIEW) {
+        renderDashboard(app, appState.projects);
         return;
     }
 
-    if (page === "project") {
-        renderDashboard();
+    if (page === ROUTES.PROJECT) {
+        renderDashboard(app, appState.projects);
 
-        const project = projects.find((p) => p.id === projectId);
+        const project = appState.projects.find((p) => p.id === projectId);
         
         if (!project) {
-            renderSimplePage("projects");
+            renderSimplePage(document.querySelector(".content"), ROUTES.PROJECTS, appState.projects);
             return;
         }
 
-        showProjectDetail(project);
-        setActiveSidebar();
+        renderProjectDetail(document.querySelector(".content"), project);
         return;
     }
 
-    renderSimplePage(page);
+    renderSimplePage(document.querySelector(".content"), page, appState.projects);
 }
 
 /*
 =========================
-Delete Project
+Render App
 =========================
 */
 
-document.addEventListener("click", function (e) {
-    const deleteButton = e.target.closest(".delete-project-btn");
-
-    if (!deleteButton) return;
-
-    // Stop card click from opening project detail
-    e.stopPropagation();
-
-    const projectId = Number(deleteButton.dataset.deleteId);
-
-    const confirmed = confirm("Are you sure you want to delete this project?");
-
-    if (!confirmed) return;
-
-    projects = projects.filter((project) => project.id !== projectId);
-
-    saveProjects();
-
-    renderPage(currentPage);
+function renderApp(page = appState.currentPage, projectId = null) {
+    renderPage(page, projectId);
     setActiveSidebar();
-});
-
-/*
-=========================
-Hash Change Listener
-=========================
-*/
-
-window.addEventListener("hashchange", function () {
-    renderCurrentRoute();
-});
-
-/*
-=========================
-Open Edit Modal
-=========================
-*/
-
-document.addEventListener("click", function (e) {
-    const editButton = e.target.closest(".edit-project-btn");
-
-    if (!editButton) return;
-
-    const projectId = Number(editButton.dataset.editId);
-    const project = projects.find((p) => p.id === projectId);
-
-    if (!project) return;
-
-    openEditProjectModal(project);
-});
-
-/*
-=========================
-Save Edited Project
-=========================
-*/
-
-document.addEventListener("click", function (e) {
-    const saveButton = e.target.closest(".save-edit-btn");
-
-    if (!saveButton) return;
-
-    const projectId = Number(saveButton.dataset.saveId);
-
-    const nameInput = document.querySelector(".edit-project-name-input");
-    const descInput = document.querySelector(".edit-project-desc-input");
-
-    const newName = nameInput.value.trim();
-    const newDescription = descInput.value.trim();
-
-    if (!newName || !newDescription) {
-        alert("Please fill in project name and description.");
-        return;
-    }
-
-    projects = projects.map((project) => {
-        if (project.id === projectId) {
-            return {
-                ...project,
-                name: newName,
-                description: newDescription,
-                updatedAt: "Updated just now",
-            };
-        }
-
-        return project;
-    });
-
-    saveProjects();
-
-    document.querySelector(".modal-overlay")?.remove();
-
-    navigateToProject(projectId);
-});
+    attachSearchHandler();
+}

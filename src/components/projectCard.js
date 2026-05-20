@@ -1,3 +1,9 @@
+import {
+    formatStars,
+    formatForks,
+    formatUpdatedAt,
+} from "../utils/format.js";
+
 /*
 =========================
 Project Card Component
@@ -30,14 +36,14 @@ export function createProjectCard(project) {
                 <span class="status-badge ${project.status.toLowerCase()}">
                     ${project.status}
                 </span>
-                <span class="updated-text">${project.updatedAt}</span>
+                <span class="updated-text">${formatUpdatedAt(project.updatedAt)}</span>
             </div>
             
             <!-- Footer -->
             <div class="project-meta">
                 <span>${project.language}</span>
-                <span>⭐ ${project.stars}</span>
-                <span>🍴 ${project.forks}</span>
+                <span>${formatStars(project.stars)}</span>
+                <span>${formatForks(project.forks)}</span>
             </div>
 
             <!-- Delete Button -->
