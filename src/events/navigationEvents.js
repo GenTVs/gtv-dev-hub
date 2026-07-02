@@ -24,6 +24,12 @@ export function attachNavigationEvents({
         }
     });
 
+    document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("back-home-btn")) {
+            navigateTo("overview");
+        }
+    });
+
     window.addEventListener("hashchange", function () {
         renderCurrentRoute();
     });

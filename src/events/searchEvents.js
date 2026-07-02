@@ -5,25 +5,30 @@ Search Events
 */
 
 import { appState } from "../state/appState.js";
-import { renderProjectCards } from "../render/renderProjects.js";
+import { ROUTES } from "../constants/appConstants.js";
 
-export function attachSearchHandler() {
-    const searchInput = document.querySelector(".search-input");
-    const projectGrid = document.querySelector(".project-grid");
+export function attachSearchHandler({ renderApp }) {
+	const searchInput = document.querySelector(".search-input");
 
-    if (!searchInput || !projectGrid) return;
+	if (searchInput) {
+		searchInput.value = appState.searchValue;
 
-    searchInput.addEventListener("input", function () {
-        const searchValue = searchInput.value.toLowerCase();
+		searchInput.addEventListener("keydown", function (e) {
+			if (e.key !== "Enter") return;
 
-        const filteredProjects = appState.projects.filter((project) => {
-            return (
-                project.name.toLowerCase().includes(searchValue) ||
-                project.description.toLowerCase().includes(searchValue) ||
-                project.language.toLowerCase().includes(searchValue)
-            );
-        });
+			appState.searchValue = searchInput.value.trim();
 
-        projectGrid.innerHTML = renderProjectCards(filteredProjects);
-    });
+			renderApp(ROUTES.PROJECTS);
+		});
+	}
+
+	const clearSearchButton = document.querySelector(".clear-search-btn");
+	
+	if (clearSearchButton) {
+		clearSearchButton.addEventListener("click", function () {
+			appState.searchValue = "";
+
+			renderApp(ROUTES.PROJECTS);
+		});
+	}
 }

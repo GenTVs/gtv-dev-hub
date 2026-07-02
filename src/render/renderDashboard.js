@@ -10,9 +10,11 @@ import { createActivityPanel } from "../components/activityPanel.js";
 
 import { renderProjectCards } from "./renderProjects.js";
 
-export function renderDashboard(app, projects) {
+export function renderDashboard(app, projects, options = {}) {
+    const { showSearch = false, searchValue = "" } = options;
+    
     app.innerHTML = `
-        ${createNavbar()}
+        ${createNavbar({ showSearch, searchValue })}
         
         <main class="main-layout">
             ${createSidebar()}

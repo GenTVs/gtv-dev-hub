@@ -40,10 +40,12 @@ import { renderProjectCards } from "./render/renderProjects.js";
 import { renderDashboard } from "./render/renderDashboard.js";
 import { renderSimplePage } from "./render/renderSimplePage.js";
 import { renderProjectDetail } from "./render/renderProjectDetail.js";
+import { renderNotFound } from "./render/renderNotFound.js";
 
 import { attachSearchHandler } from "./events/searchEvents.js";
 import { attachProjectEvents } from "./events/projectEvents.js";
 import { attachNavigationEvents } from "./events/navigationEvents.js";
+import { attachFilterEvents } from "./events/filterEvents.js";
 
 /*
 =========================
@@ -142,6 +144,10 @@ attachNavigationEvents({
     renderCurrentRoute,
 });
 
+attachFilterEvents({
+    renderApp,
+});
+
 /*
 =========================
 Initial Render
@@ -159,10 +165,17 @@ Active Sidebar State
 */
 
 function setActiveSidebar() {
+    const route = getRouteFromHash();
+
+    const currentPage =
+        route.page === ROUTES.PROJECT
+            ? ROUTES.PROJECTS
+            : route.page;
+
     const links = document.querySelectorAll("[data-page]");
 
     links.forEach((link) => {
-        if (link.dataset.page === appState.currentPage) {
+        if (link.dataset.page === currentPage) {
             link.classList.add("active");
         } else {
             link.classList.remove("active");
@@ -219,20 +232,44 @@ Main Router
 */
 
 function renderPage(page, projectId = null) {
-    appState.currentPage = page === ROUTES.PROJECT ? ROUTES.PROJECTS : page;
+    const showSearch = page === ROUTES.PROJECTS;
+
+    /*
+    =========================
+    Overview Page
+    =========================
+    */
 
     if (page === ROUTES.OVERVIEW) {
-        renderDashboard(app, appState.projects);
+        renderDashboard(app, appState.projects, {
+            showSearch: false,
+            searchValue: appState.searchValue,
+        });
+
         return;
     }
 
+    /*
+    =========================
+    Project Detail Page
+    =========================
+    */
+
     if (page === ROUTES.PROJECT) {
-        renderDashboard(app, appState.projects);
+        renderDashboard(app, appState.projects, {
+            showSearch: false,
+            searchValue: appState.searchValue,
+        });
 
         const project = appState.projects.find((p) => p.id === projectId);
-        
+
         if (!project) {
-            renderSimplePage(document.querySelector(".content"), ROUTES.PROJECTS, appState.projects);
+            renderSimplePage(
+                document.querySelector(".content"),
+                ROUTES.PROJECTS,
+                appState.projects
+            );
+
             return;
         }
 
@@ -240,7 +277,38 @@ function renderPage(page, projectId = null) {
         return;
     }
 
-    renderSimplePage(document.querySelector(".content"), page, appState.projects);
+    /*
+    =========================
+    Not Found Page
+    =========================
+    */
+
+    if (page === ROUTES.NOT_FOUND) {
+        renderDashboard(app, appState.projects, {
+            showSearch: false,
+            searchValue: appState.searchValue,
+        });
+
+        renderNotFound(document.querySelector(".content"));
+        return;
+    }
+
+    /*
+    =========================
+    Other Pages
+    =========================
+    */
+
+    renderDashboard(app, appState.projects, {
+        showSearch: showSearch,
+        searchValue: appState.searchValue,
+    });
+
+    renderSimplePage(
+        document.querySelector(".content"),
+        page,
+        appState.projects
+    );
 }
 
 /*
@@ -252,5 +320,7 @@ Render App
 function renderApp(page = appState.currentPage, projectId = null) {
     renderPage(page, projectId);
     setActiveSidebar();
-    attachSearchHandler();
+    attachSearchHandler({
+        renderApp,
+    });
 }

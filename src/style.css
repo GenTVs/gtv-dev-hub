@@ -837,3 +837,35 @@ Section Actions
     display: flex;
     gap: 10px;
 }
+
+/*
+=========================
+Filter Bar
+=========================
+*/
+
+.filter-bar {
+    margin-bottom: 18px;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 7px 12px;
+
+    background-color: transparent;
+    color: var(--text-muted);
+
+    border: 1px solid var(--border-soft);
+    border-radius: 999px;
+
+    cursor: pointer;
+}
+
+.filter-btn.active {
+    color: var(--text-main);
+    border-color: var(--accent-blue);
+    background-color: rgba(88, 166, 255, 0.12);
+}

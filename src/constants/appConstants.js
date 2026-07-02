@@ -13,4 +13,5 @@ export const ROUTES = {
     PROFILE: "profile",
     STARS: "stars",
     SETTINGS: "settings",
+    NOT_FOUND: "not-found",
 };

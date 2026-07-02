@@ -8,6 +8,7 @@ export const appState = {
     currentPage: "overview",
     projects: [],
     searchValue: "",
+    statusFilter: "all",
 };
 
 /*
