@@ -1,0 +1,739 @@
+/*
+=========================
+GTV Dev Hub - React CSS
+=========================
+*/
+
+/*
+=========================
+Global Reset
+=========================
+*/
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+/*
+=========================
+Root Variables
+=========================
+*/
+
+:root {
+	--bg-main: #0d1117;
+	--bg-panel: #161b22;
+	--bg-card: #21262d;
+
+	--border-soft: #30363d;
+
+	--text-main: #f0f6fc;
+	--text-muted: #8b949e;
+	
+	--accent-blue: #58a6ff;
+	--accent-green: #3fb950;
+}
+
+/*
+=========================
+Base Body
+=========================
+*/
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: var(--bg-main);
+	color: var(--text-main);
+	min-height: 100vh;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+button,
+input,
+textarea {
+	font-family: inherit;
+}
+
+/*
+=========================
+App
+=========================
+*/
+
+.app {
+	min-height: 100vh;
+}
+
+/*
+=========================
+Navbar
+=========================
+*/
+
+.navbar {
+	height: 64px;
+	padding: 0 32px;
+
+	background-color: var(--bg-panel);
+	border-bottom: 1px solid var(--border-soft);
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.logo {
+	font-size: 22px;
+	font-weight: 700;
+}
+
+.nav-left,
+.nav-center,
+.nav-right {
+	display: flex;
+	align-items: center;
+}
+
+.nav-center {
+	flex: 1;
+	justify-content: center;
+}
+
+.nav-right {
+	gap: 20px;
+}
+
+.nav-right a {
+	color: var(--text-muted);
+	font-size: 14px;
+}
+
+.nav-right a:hover {
+	color: var(--accent-blue);
+}
+
+.search-input {
+	width: 100%;
+	max-width: 420px;
+	padding: 9px 12px;
+
+	background-color: var(--bg-main);
+	color: var(--text-main);
+
+	border: 1px solid var(--border-soft);
+	border-radius: 8px;
+
+	font-size: 14px;
+}
+
+.search-input::placeholder {
+	color: var(--text-muted);
+}
+
+.search-input:focus {
+	outline: none;
+	border-color: var(--accent-blue);
+}
+
+/*
+=========================
+Main Layout
+=========================
+*/
+
+.main-layout {
+	display: flex;
+	min-height: calc(100vh - 64px);
+}
+
+/*
+=========================
+Sidebar
+=========================
+*/
+
+.sidebar {
+	width: 240px;
+	padding: 24px;
+
+	background-color: var(--bg-panel);
+	border-right: 1px solid var(--border-soft);
+}
+
+.sidebar-title {
+	font-size: 16px;
+	margin-bottom: 18px;
+}
+
+.sidebar-menu {
+	list-style: none;
+
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.sidebar-menu a {
+	color: var(--text-muted);
+	font-size: 14px;
+}
+
+.sidebar-menu a:hover {
+	color: var(--text-main);
+}
+
+/*
+=========================
+Content
+=========================
+*/
+
+.content {
+	flex: 1;
+	padding: 32px;
+	min-width: 0;
+}
+
+.hero {
+	padding: 32px;
+	margin-bottom: 28px;
+
+	background-color: var(--bg-panel);
+	border: 1px solid var(--border-soft);
+	border-radius: 12px;
+}
+
+.hero h1 {
+	font-size: 36px;
+	margin-bottom: 10px;
+}
+
+.hero p {
+	color: var(--text-muted);
+	font-size: 16px;
+}
+
+/*
+=========================
+Section Header
+=========================
+*/
+
+.section-header {
+	margin-bottom: 18px;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.section-header h2 {
+	font-size: 24px;
+}
+
+/*
+=========================
+Buttons
+=========================
+*/
+
+.primary-btn {
+	padding: 8px 14px;
+
+	background-color: var(--accent-green);
+	color: white;
+
+	border: none;
+	border-radius: 8px;
+
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.primary-btn:hover {
+	opacity: 0.9;
+}
+
+/*
+=========================
+Activity Panel
+=========================
+*/
+
+.activity-panel {
+	width: 300px;
+	padding: 24px;
+
+	background-color: var(--bg-panel);
+	border-left: 1px solid var(--border-soft);
+}
+
+.activity-title {
+	font-size: 16px;
+	margin-bottom: 16px;
+}
+
+.activity-list {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.activity-item {
+	padding: 12px;
+
+	background-color: var(--bg-card);
+	border: 1px solid var(--border-soft);
+	border-radius: 10px;
+
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.activity-item strong {
+	font-size: 14px;
+	color: var(--accent-blue);
+}
+
+.activity-item span {
+	font-size: 13px;
+	color: var(--text-muted);
+}
+
+/*
+=========================
+Project Grid
+=========================
+*/
+
+.project-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+
+	gap: 18px;
+}
+
+/*
+=========================
+Project Card
+=========================
+*/
+
+.project-card {
+	padding: 20px;
+
+	background-color: var(--bg-card);
+	border: 1px solid var(--border-soft);
+	border-radius: 12px;
+}
+
+.project-card:hover {
+	border-color: var(--accent-blue);
+}
+
+.project-header {
+	margin-bottom: 12px;
+	
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.project-title {
+	font-size: 20px;
+	color: var(--accent-blue);
+}
+
+.project-visibility {
+	padding: 3px 8px;
+
+	border: 1px solid var(--border-soft);
+	border-radius: 999px;
+
+	color: var(--text-muted);
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.project-desc {
+	min-height: 48px;
+	margin-bottom: 18px;
+
+	color: var(--text-muted);
+	line-height: 1.5;
+}
+
+.project-status {
+	margin-bottom: 18px;
+
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.status-badge {
+	padding: 4px 8px;
+
+	border-radius: 999px;
+
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.status-badge.active {
+	background-color: rgba(63, 185, 80, 0.15);
+	color: var(--accent-green);
+}
+
+.status-badge.beta {
+	background-color: rgba(88, 166, 255, 0.15);
+	color: var(--accent-blue);
+}
+
+.status-badge.planning {
+	background-color: rgba(210, 153, 34, 0.15);
+	color: #d29922;
+}
+
+.updated-text {
+	color: var(--text-muted);
+	font-size: 12px;
+}
+
+.project-meta {
+	display: flex;
+	gap: 14px;
+
+	color: var(--text-muted);
+	font-size: 14px;
+}
+
+/*
+=========================
+Modal
+=========================
+*/
+
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	background-color: rgba(0, 0, 0, 0.6);
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.modal {
+	width: 400px;
+	padding: 24px;
+
+	background-color: var(--bg-panel);
+	border: 1px solid var(--border-soft);
+	border-radius: 12px;
+
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.modal input,
+.modal textarea {
+	padding: 8px;
+	
+	background-color: var(--bg-main);
+	color: var(--text-main);
+
+	border: 1px solid var(--border-soft);
+	border-radius: 6px;
+}
+
+.modal textarea {
+	min-height: 100px;
+	resize: vertical;
+}
+
+.modal-actions {
+	margin-top: 10px;
+
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+.secondary-btn {
+	padding: 8px 14px;
+
+	background-color: transparent;
+	color: var(--text-muted);
+
+	border: 1px solid var(--border-soft);
+	border-radius: 8px;
+
+	cursor: pointer;
+}
+
+.secondary-btn:hover {
+	color: var(--text-main);
+	border-color: var(--accent-blue);
+}
+
+/*
+=========================
+Delete Project Button
+=========================
+*/
+
+.delete-project-btn {
+	margin-top: 16px;
+	padding: 7px 10px;
+
+	background-color: transparent;
+	color: #f85149;
+
+	border: 1px solid rgba(248, 81, 73, 0.4);
+	border-radius: 8px;
+
+	font-size: 13px;
+	font-weight: 700;
+
+	cursor: pointer;
+}
+
+.delete-project-btn:hover {
+	background-color: rgba(248, 81, 73, 0.12);
+	border-color: #f85149;
+}
+
+/*
+=========================
+Filter Bar
+=========================
+*/
+
+.filter-bar {
+	margin-bottom: 18px;
+
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.filter-btn {
+	padding: 7px 12px;
+
+	background-color: transparent;
+	color: var(--text-muted);
+
+	border: 1px solid var(--border-soft);
+	border-radius: 999px;
+
+	cursor: pointer;
+}
+
+.filter-btn.active {
+	color: var(--text-main);
+	border-color: var(--accent-blue);
+	background-color: rgba(88, 166, 255, 0.12);
+}
+
+/*
+=========================
+Section Actions
+=========================
+*/
+
+.section-actions {
+	display: flex;
+	gap: 10px;
+}
+
+/*
+=========================
+Empty State
+=========================
+*/
+
+.empty-state {
+	padding: 32px;
+
+	background-color: var(--bg-panel);
+	border: 1px solid var(--border-soft);
+	border-radius: 12px;
+
+	color: var(--text-muted);
+}
+
+.empty-state h3 {
+	margin-bottom: 8px;
+	color: var(--text-main);
+}
+
+/*
+=========================
+Project Detail View
+=========================
+*/
+
+.project-detail {
+	padding: 32px;
+
+	background-color: var(--bg-panel);
+	border: 1px solid var(--border-soft);
+	border-radius: 12px;
+}
+
+.project-detail h1 {
+	margin-bottom: 12px;
+
+	color: var(--accent-blue);
+	font-size: 36px;
+}
+
+.project-detail p {
+	max-width: 720px;
+	margin-bottom: 20px;
+
+	color: var(--text-muted);
+	line-height: 1.6;
+}
+
+.project-detail .project-status {
+	margin-bottom: 20px;
+}
+
+.project-detail .project-meta {
+	margin-bottom: 28px;
+}
+
+.back-btn {
+	margin-top: 8px;
+}
+
+/*
+=========================
+Detail Actions
+=========================
+*/
+
+.detail-actions {
+	display: flex;
+	gap: 12px;
+}
+
+/*
+=========================
+Responsive Layout
+=========================
+*/
+
+/* Tablet */
+@media (max-width: 1024px) {
+	.activity-panel {
+		display: none;
+	}
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+	.navbar {
+		height: auto;
+		padding: 16px;
+
+		flex-direction: column;
+		align-items: stretch;
+		gap: 14px;
+	}
+
+	.nav-left,
+	.nav-center,
+	.nav-right {
+		width: 100%;
+	}
+
+	.nav-center {
+		justify-content: stretch;
+	}
+
+	.search-input {
+		max-width: none;
+	}
+
+	.nav-right {
+		justify-content: space-between;
+	}
+
+	.main-layout {
+		flex-direction: column;
+	}
+
+	.sidebar {
+		width: 100%;
+
+		border-right: none;
+		border-bottom: 1px solid var(--border-soft);
+	}
+
+	.sidebar-menu {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	.content {
+		padding: 20px;
+	}
+
+	.hero {
+		padding: 24px;
+	}
+
+	.hero h1 {
+		font-size: 30px;
+	}
+
+	.section-header {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.section-actions {
+		width: 100%;
+	}
+
+	.project-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.modal {
+		width: calc(100% - 32px);
+	}
+
+	.detail-actions {
+		flex-direction: column;
+	}
+}
+
+/*
+=========================
+Active Navigation Links
+=========================
+*/
+
+.nav-right a.active,
+.sidebar-menu a.active {
+	color: var(--text-main);
+	font-weight: 700;
+}
