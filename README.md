@@ -1,68 +1,33 @@
-# GTV Dev Hub
+## Phase 3 Features
 
-A GitHub-inspired developer hub for GTV Community projects.
+Phase 3 rebuilds the GTV Dev Hub frontend using React and Vite.
 
-## Project Goal
-
-Build a simple developer platform to organize projects, experiments, bots, and learning progress.
-
-This project is also used as a learning project to understand frontend structure, routing, state management, and scalable app architecture.
-
-## Tech Stack
-
-- HTML
-- CSS
-- JavaScript
-- LocalStorage
-- Live Server
-
-## Phase 1 Features
-
-- GitHub-style dark dashboard
-- Navbar and sidebar layout
-- Project cards
-- Project detail page
-- Search projects
+- React + Vite project setup
+- Component-based structure
+- Navbar, sidebar, content, and activity panel components
+- Project cards rendered with `.map()`
+- React state using `useState`
+- LocalStorage persistence using `useEffect`
 - Create project modal
-- Edit project
-- Delete project
-- LocalStorage persistence
-- Hash routing
+- Edit project modal
+- Delete project feature
+- Search and status filter system
+- Search result title and clear search button
+- Project detail view
+- Basic page navigation using React state
+- Search bar only appears on the Projects page
 - Responsive mobile layout
-
-## Phase 2 Features
-
-- Central app state
-- State helper functions
-- Storage utilities
-- Router utilities
-- Constants system
-- Render layer
-- Event layer
-- Project modal component
-- Default project factory
-- Reset demo data
-- 404 route page
-- Status filters
-- Enter-to-search behavior
-- Search result title
-- Clear search button
-- Cleaner app coordinator structure
 
 ## Current Status
 
-Phase 2 frontend architecture checkpoint is complete.
+Phase 3 React + Vite rebuild checkpoint is complete.
 
 ## Next Phase
 
-Phase 3 will focus on rebuilding or migrating the project using React and Vite.
+Phase 4 should continue in a new chat and focus on either:
 
-Main goals for Phase 3:
-
-- React component structure
-- React Router
-- useState and props
-- Rebuild project cards
-- Rebuild project detail routes
-- Rebuild search and filter system
-- Keep LocalStorage persistence
+- React Router and cleaner routing
+- Backend API with Node.js / Express
+- Database with SQLite or PostgreSQL
+- Authentication and user accounts
+- Real project/repository data system
